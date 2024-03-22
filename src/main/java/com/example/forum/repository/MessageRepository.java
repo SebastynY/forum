@@ -1,12 +1,10 @@
 package com.example.forum.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.example.forum.entity.Message;
-
-import java.util.List;
+import com.example.forum.model.Message;
+import java.util.UUID;
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, Long> {
-  List<Message> findByTopicId(Long topicId);
+public interface MessageRepository extends JpaRepository<Message, UUID> {
 }
 
