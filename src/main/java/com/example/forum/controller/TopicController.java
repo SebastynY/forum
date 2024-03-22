@@ -45,6 +45,12 @@ public class TopicController {
     Topic updatedTopic = topicService.getTopicById(topicId);
     return new ResponseEntity<>(updatedTopic, HttpStatus.CREATED);
   }
+  @PutMapping("/topic/{topicId}/message")
+  public ResponseEntity<Topic> updateMessageInTopic(@PathVariable UUID topicId, @RequestBody Message messageDetails) {
+    Topic updatedTopic = topicService.updateMessageInTopic(topicId, messageDetails);
+    return new ResponseEntity<>(updatedTopic, HttpStatus.OK);
+  }
+
 
 
 }
