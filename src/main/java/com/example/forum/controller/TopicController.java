@@ -1,8 +1,8 @@
 package com.example.forum.controller;
 
 import com.example.forum.dto.TopicDTO;
-import com.example.forum.model.Message;
-import com.example.forum.model.Topic;
+import com.example.forum.entity.Message;
+import com.example.forum.entity.Topic;
 import com.example.forum.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,10 @@ public class TopicController {
     Topic updatedTopic = topicService.updateMessageInTopic(topicId, messageDetails);
     return new ResponseEntity<>(updatedTopic, HttpStatus.OK);
   }
-
-
+  @DeleteMapping("/message/{messageId}")
+  public ResponseEntity<?> deleteMessage(@PathVariable UUID messageId) {
+    topicService.deleteMessage(messageId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
 
 }

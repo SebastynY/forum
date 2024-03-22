@@ -1,10 +1,11 @@
 package com.example.forum.service;
 
 import com.example.forum.dto.TopicDTO;
-import com.example.forum.model.Message;
-import com.example.forum.model.Topic;
+import com.example.forum.entity.Message;
+import com.example.forum.entity.Topic;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
@@ -18,7 +19,7 @@ public class TopicService {
 
   @Autowired
   private MessageRepository messageRepository;
-
+  @Transactional
   public Topic createTopic(TopicDTO topicDto) {
     Topic topic = new Topic();
     topic.setTitle(topicDto.getTopicName());
@@ -34,10 +35,11 @@ public class TopicService {
 
     return topicRepository.save(topic);
   }
+  @Transactional
   public List<Topic> getAllTopics() {
     return topicRepository.findAll();
   }
-
+  @Transactional
   public Topic updateTopic(TopicDTO topicDto) {
     UUID topicId = topicDto.getId();
     Topic topic = topicRepository.findById(topicId).orElseThrow(
@@ -50,12 +52,13 @@ public class TopicService {
 
     return topicRepository.save(topic);
   }
+  @Transactional
   public Topic getTopicById(UUID topicId) {
     return topicRepository.findById(topicId).orElseThrow(
         () -> new IllegalArgumentException("Topic not found")
     );
   }
-
+  @Transactional
   public Message addMessageToTopic(UUID topicId, Message message) {
     Topic topic = topicRepository.findById(topicId).orElseThrow(
         () -> new IllegalArgumentException("Topic not found")
@@ -67,6 +70,7 @@ public class TopicService {
     return message;
   }
 
+  @Transactional
   public Topic updateMessageInTopic(UUID topicId, Message messageDetails) {
     Topic topic = topicRepository.findById(topicId).orElseThrow(
         () -> new IllegalArgumentException("Topic not found")
@@ -82,5 +86,12 @@ public class TopicService {
     messageRepository.save(messageToUpdate);
     return topic;
   }
+  @Transactional
+  public void deleteMessage(UUID messageId) {
+    Message message = messageRepository.findById(messageId)
+        .orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    messageRepository.delete(message);
+  }
+
 
 }

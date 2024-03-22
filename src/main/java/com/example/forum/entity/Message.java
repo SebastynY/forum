@@ -1,4 +1,4 @@
-package com.example.forum.model;
+package com.example.forum.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;

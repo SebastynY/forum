@@ -1,5 +1,4 @@
   package com.example.forum.dto;
-
   import com.fasterxml.jackson.annotation.JsonAlias;
   import java.io.Serializable;
   import java.time.OffsetDateTime;
