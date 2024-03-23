@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+
+/**
+ * Класс сервиса для управления темами и сообщениями форума.
+ * Предоставляет функциональность для создания, обновления, получения и удаления тем и сообщений на форуме.
+ */
 @Service
 public class ForumService {
 
@@ -19,6 +24,12 @@ public class ForumService {
 
   @Autowired
   private MessageRepository messageRepository;
+
+  /**
+   * Создает новую тему на основе предоставленного DTO темы, включая начальное сообщение.
+   * @param topicDto DTO, содержащее информацию, необходимую для создания новой темы и ее начального сообщения.
+   * @return Новосозданная сущность темы.
+   */
   @Transactional
   public Topic createTopic(TopicDTO topicDto) {
     Topic topic = new Topic();
@@ -35,10 +46,21 @@ public class ForumService {
 
     return topicRepository.save(topic);
   }
+
+  /**
+   * Получает все темы.
+   * @return Список всех тем.
+   */
   @Transactional
   public List<Topic> getAllTopics() {
     return topicRepository.findAll();
   }
+
+  /**
+   * Обновляет тему на основе предоставленного DTO темы.
+   * @param topicDto DTO темы, содержащее обновленные данные.
+   * @return Обновленная сущность темы.
+   */
   @Transactional
   public Topic updateTopic(TopicDTO topicDto) {
     UUID topicId = topicDto.getId();
@@ -52,12 +74,25 @@ public class ForumService {
 
     return topicRepository.save(topic);
   }
+
+  /**
+   * Получает тему по ее идентификатору.
+   * @param topicId Идентификатор темы.
+   * @return Сущность темы.
+   */
   @Transactional
   public Topic getTopicById(UUID topicId) {
     return topicRepository.findById(topicId).orElseThrow(
         () -> new IllegalArgumentException("Topic not found")
     );
   }
+
+  /**
+   * Добавляет сообщение в тему.
+   * @param topicId Идентификатор темы, в которую добавляется сообщение.
+   * @param message Сообщение для добавления.
+   * @return Добавленное сообщение.
+   */
   @Transactional
   public Message addMessageToTopic(UUID topicId, Message message) {
     Topic topic = topicRepository.findById(topicId).orElseThrow(
@@ -70,6 +105,12 @@ public class ForumService {
     return message;
   }
 
+  /**
+   * Обновляет сообщение в теме.
+   * @param topicId Идентификатор темы, в которой находится сообщение.
+   * @param messageDetails Детали сообщения для обновления.
+   * @return Тема, в которой было обновлено сообщение.
+   */
   @Transactional
   public Topic updateMessageInTopic(UUID topicId, Message messageDetails) {
     Topic topic = topicRepository.findById(topicId).orElseThrow(
@@ -86,6 +127,11 @@ public class ForumService {
     messageRepository.save(messageToUpdate);
     return topic;
   }
+
+  /**
+   * Удаляет сообщение по его идентификатору.
+   * @param messageId Идентификатор удаляемого сообщения.
+   */
   @Transactional
   public void deleteMessage(UUID messageId) {
     Message message = messageRepository.findById(messageId)
