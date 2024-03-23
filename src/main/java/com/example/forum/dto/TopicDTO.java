@@ -29,6 +29,9 @@
     public void setMessage(MessageDTO message) {
       this.message = message;
     }
+    public void setId(UUID id) {
+      this.id = id;
+    }
 
     public UUID getId() {
       return id;
