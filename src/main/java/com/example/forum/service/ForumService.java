@@ -23,12 +23,12 @@ public class ForumService {
   public Topic createTopic(TopicDTO topicDto) {
     Topic topic = new Topic();
     topic.setTitle(topicDto.getTopicName());
-    topic.setCreatedAt(OffsetDateTime.now());
+    topic.setCreated(OffsetDateTime.now());
 
     Message message = new Message();
     message.setText(topicDto.getMessage().getText());
     message.setAuthor(topicDto.getMessage().getAuthor());
-    message.setCreatedAt(topicDto.getMessage().getCreated());
+    message.setCreated(topicDto.getMessage().getCreated());
     message.setTopic(topic);
 
     topic.getMessages().add(message);
@@ -64,7 +64,7 @@ public class ForumService {
         () -> new IllegalArgumentException("Topic not found")
     );
     message.setTopic(topic);
-    message.setCreatedAt(OffsetDateTime.now());
+    message.setCreated(OffsetDateTime.now());
     topic.getMessages().add(message);
     topicRepository.save(topic);
     return message;

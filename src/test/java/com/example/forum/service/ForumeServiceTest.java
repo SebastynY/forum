@@ -52,12 +52,12 @@ public class ForumeServiceTest {
 
     Topic expectedTopic = new Topic();
     expectedTopic.setTitle("Test Topic");
-    expectedTopic.setCreatedAt(OffsetDateTime.now());
+    expectedTopic.setCreated(OffsetDateTime.now());
 
     Message message = new Message();
     message.setText(messageDto.getText());
     message.setAuthor(messageDto.getAuthor());
-    message.setCreatedAt(messageDto.getCreated());
+    message.setCreated(messageDto.getCreated());
     expectedTopic.getMessages().add(message);
 
     when(topicRepository.save(any(Topic.class))).thenReturn(expectedTopic);
@@ -70,7 +70,7 @@ public class ForumeServiceTest {
     Message actualMessage = actualTopic.getMessages().get(0);
     assertEquals(messageDto.getText(), actualMessage.getText());
     assertEquals(messageDto.getAuthor(), actualMessage.getAuthor());
-    assertEquals(messageDto.getCreated(), actualMessage.getCreatedAt());
+    assertEquals(messageDto.getCreated(), actualMessage.getCreated());
 
     verify(topicRepository, times(1)).save(any(Topic.class));
   }
@@ -159,7 +159,7 @@ public class ForumeServiceTest {
 
     assertEquals(message.getText(), actualMessage.getText());
     assertEquals(message.getAuthor(), actualMessage.getAuthor());
-    assertNotNull(actualMessage.getCreatedAt());
+    assertNotNull(actualMessage.getCreated());
     assertEquals(existingTopic, actualMessage.getTopic());
     verify(topicRepository, times(1)).findById(topicId);
     verify(topicRepository, times(1)).save(any(Topic.class));

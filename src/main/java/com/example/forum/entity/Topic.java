@@ -19,8 +19,8 @@ public class Topic {
 
   private String title;
 
-  @Column(name = "created_at")
-  private OffsetDateTime createdAt;
+  @Column(name = "created")
+  private OffsetDateTime created;
 
   @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
@@ -42,12 +42,12 @@ public class Topic {
     this.title = title;
   }
 
-  public OffsetDateTime getCreatedAt() {
-    return createdAt;
+  public OffsetDateTime getCreated() {
+    return created;
   }
 
-  public void setCreatedAt(OffsetDateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setCreated(OffsetDateTime created) {
+    this.created = created;
   }
 
   public List<Message> getMessages() {

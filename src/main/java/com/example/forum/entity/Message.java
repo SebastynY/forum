@@ -15,8 +15,8 @@ public class Message {
   private UUID id;
   private String author;
   private String text;
-  @Column(name = "created_at")
-  private OffsetDateTime createdAt;
+  @Column(name = "created")
+  private OffsetDateTime created;
   @ManyToOne(fetch = FetchType.LAZY)
   @JsonBackReference
   private Topic topic;
@@ -45,12 +45,12 @@ public class Message {
     this.text = text;
   }
 
-  public OffsetDateTime getCreatedAt() {
-    return createdAt;
+  public OffsetDateTime getCreated() {
+    return created;
   }
 
-  public void setCreatedAt(OffsetDateTime createdAt) {
-    this.createdAt = createdAt;
+  public void setCreated(OffsetDateTime created) {
+    this.created = created;
   }
 
   public Topic getTopic() {

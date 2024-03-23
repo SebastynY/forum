@@ -11,7 +11,7 @@
     @JsonAlias({"name"})
     private String topicName;
 
-    private OffsetDateTime createdAt;
+    private OffsetDateTime created;
     private MessageDTO message;
 
     public String getTopicName() {
@@ -37,7 +37,7 @@
       return id;
     }
 
-    public OffsetDateTime getCreatedAt() {
-      return createdAt;
+    public OffsetDateTime getCreated() {
+      return created;
     }
   }
