@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 @Service
-public class TopicService {
+public class ForumService {
 
   @Autowired
   private TopicRepository topicRepository;

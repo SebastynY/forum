@@ -3,7 +3,7 @@ package com.example.forum.controller;
 import com.example.forum.dto.TopicDTO;
 import com.example.forum.entity.Message;
 import com.example.forum.entity.Topic;
-import com.example.forum.service.TopicService;
+import com.example.forum.service.ForumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1")
-public class TopicController {
+public class ForumController {
 
   @Autowired
-  private TopicService topicService;
+  private ForumService topicService;
 
   @PostMapping("/topic")
   public ResponseEntity<Topic> createTopic(@RequestBody TopicDTO topicDto) {
