@@ -7,11 +7,13 @@ import com.example.forum.service.ForumService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -40,8 +42,8 @@ public class ForumController {
       response = Topic.class,
       responseContainer = "List",
       notes = "Возвращает список всех тем на форуме.")
-  public ResponseEntity<List<Topic>> getAllTopics() {
-    List<Topic> topics = topicService.getAllTopics();
+  public ResponseEntity<Page<Topic>> getAllTopics(@PageableDefault(size = 5) Pageable pageable) {
+    Page<Topic> topics = topicService.getAllTopics(pageable);
     return ResponseEntity.ok(topics);
   }
 
@@ -66,7 +68,8 @@ public class ForumController {
   }
 
   @PostMapping("/topic/{topicId}/message")
-  @ApiOperation(value = "Добавить сообщение в тему",
+  @ApiOperation(
+      value = "Добавить сообщение в тему",
       response = Topic.class,
       notes = "Добавляет новое сообщение к существующей теме по ID темы.")
   public ResponseEntity<Topic> addMessageToTopic(
@@ -94,5 +97,17 @@ public class ForumController {
   public ResponseEntity<?> deleteMessage(@PathVariable UUID messageId) {
     topicService.deleteMessage(messageId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @GetMapping("/topic/{topicId}/messages")
+  @ApiOperation(
+      value = "Получить сообщения темы по ID",
+      response = Message.class,
+      responseContainer = "Page",
+      notes = "Возвращает страницу с сообщениями заданной темы, поддерживая пагинацию.")
+  public ResponseEntity<Page<Message>> getMessagesByTopicId(
+      @PathVariable UUID topicId, @PageableDefault(size = 10) Pageable pageable) {
+    Page<Message> messages = topicService.getTopicMessages(topicId, pageable);
+    return ResponseEntity.ok(messages);
   }
 }

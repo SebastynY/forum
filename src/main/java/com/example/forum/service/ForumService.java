@@ -6,11 +6,13 @@ import com.example.forum.entity.Topic;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
 import jakarta.transaction.Transactional;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * Класс сервиса для управления темами и сообщениями форума. Предоставляет функциональность для
@@ -19,19 +21,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class ForumService {
 
-  @Autowired private TopicRepository topicRepository;
+  @Autowired
+  private TopicRepository topicRepository;
 
-  @Autowired private MessageRepository messageRepository;
+  @Autowired
+  private MessageRepository messageRepository;
 
   /**
    * Создает новую тему на основе предоставленного DTO темы, включая начальное сообщение.
    *
    * @param topicDto DTO, содержащее информацию, необходимую для создания новой темы и ее начального
-   *     сообщения.
+   *                 сообщения.
    * @return Новосозданная сущность темы.
    */
   @Transactional
   public Topic createTopic(TopicDTO topicDto) {
+    if (topicDto == null || topicDto.getMessage() == null) {
+      throw new IllegalArgumentException("Topic and initial message must be provided");
+    }
+
     Topic topic = new Topic();
     topic.setTitle(topicDto.getTopicName());
     topic.setCreated(OffsetDateTime.now());
@@ -39,12 +47,16 @@ public class ForumService {
     Message message = new Message();
     message.setText(topicDto.getMessage().getText());
     message.setAuthor(topicDto.getMessage().getAuthor());
-    message.setCreated(topicDto.getMessage().getCreated());
+    message.setCreated(
+        topicDto.getMessage().getCreated() != null
+            ? topicDto.getMessage().getCreated()
+            : OffsetDateTime.now());
     message.setTopic(topic);
 
     topic.getMessages().add(message);
 
-    return topicRepository.save(topic);
+    topic = topicRepository.save(topic);
+    return topic;
   }
 
   /**
@@ -53,8 +65,8 @@ public class ForumService {
    * @return Список всех тем.
    */
   @Transactional
-  public List<Topic> getAllTopics() {
-    return topicRepository.findAll();
+  public Page<Topic> getAllTopics(Pageable pageable) {
+    return topicRepository.findAll(pageable);
   }
 
   /**
@@ -114,7 +126,7 @@ public class ForumService {
   /**
    * Обновляет сообщение в теме.
    *
-   * @param topicId Идентификатор темы, в которой находится сообщение.
+   * @param topicId        Идентификатор темы, в которой находится сообщение.
    * @param messageDetails Детали сообщения для обновления.
    * @return Тема, в которой было обновлено сообщение.
    */
@@ -149,5 +161,17 @@ public class ForumService {
             .findById(messageId)
             .orElseThrow(() -> new IllegalArgumentException("Message not found"));
     messageRepository.delete(message);
+  }
+
+  /**
+   * Пагинированный запрос сообщений по идентификатору темы.
+   *
+   * @param topicId  Идентификатор темы, для которой требуются сообщения, в формате UUID.
+   * @param pageable Параметры для пагинации и сортировки результатов.
+   * @return Страница с сообщениями темы, включающая в себя данные о сообщениях и информацию о
+   * пагинации.
+   */
+  public Page<Message> getTopicMessages(UUID topicId, Pageable pageable) {
+    return messageRepository.findByTopicId(topicId, pageable);
   }
 }
