@@ -1,13 +1,12 @@
 package com.example.forum.entity;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Topic {

@@ -1,10 +1,10 @@
 package com.example.forum.entity;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Message {
@@ -13,10 +13,13 @@ public class Message {
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
+
   private String author;
   private String text;
+
   @Column(name = "created")
   private OffsetDateTime created;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JsonBackReference
   private Topic topic;

@@ -1,43 +1,45 @@
-  package com.example.forum.dto;
-  import com.fasterxml.jackson.annotation.JsonAlias;
-  import java.io.Serializable;
-  import java.time.OffsetDateTime;
-  import java.util.UUID;
+package com.example.forum.dto;
 
-  public class TopicDTO implements Serializable {
+import com.fasterxml.jackson.annotation.JsonAlias;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
-    private UUID id;
+public class TopicDTO implements Serializable {
 
-    @JsonAlias({"name"})
-    private String topicName;
+  private UUID id;
 
-    private OffsetDateTime created;
-    private MessageDTO message;
+  @JsonAlias({"name"})
+  private String topicName;
 
-    public String getTopicName() {
-      return topicName;
-    }
+  private OffsetDateTime created;
+  private MessageDTO message;
 
-    public void setTopicName(String topicName) {
-      this.topicName = topicName;
-    }
-
-    public MessageDTO getMessage() {
-      return message;
-    }
-
-    public void setMessage(MessageDTO message) {
-      this.message = message;
-    }
-    public void setId(UUID id) {
-      this.id = id;
-    }
-
-    public UUID getId() {
-      return id;
-    }
-
-    public OffsetDateTime getCreated() {
-      return created;
-    }
+  public String getTopicName() {
+    return topicName;
   }
+
+  public void setTopicName(String topicName) {
+    this.topicName = topicName;
+  }
+
+  public MessageDTO getMessage() {
+    return message;
+  }
+
+  public void setMessage(MessageDTO message) {
+    this.message = message;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
+
+  public UUID getId() {
+    return id;
+  }
+
+  public OffsetDateTime getCreated() {
+    return created;
+  }
+}

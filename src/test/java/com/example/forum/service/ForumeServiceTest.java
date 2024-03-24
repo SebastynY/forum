@@ -1,42 +1,37 @@
 package com.example.forum.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.example.forum.dto.MessageDTO;
 import com.example.forum.dto.TopicDTO;
 import com.example.forum.entity.Message;
 import com.example.forum.entity.Topic;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 public class ForumeServiceTest {
 
-  @Mock
-  private TopicRepository topicRepository;
+  @Mock private TopicRepository topicRepository;
 
-  @Mock
-  private MessageRepository messageRepository;
+  @Mock private MessageRepository messageRepository;
 
-  @InjectMocks
-  private ForumService forumService;
+  @InjectMocks private ForumService forumService;
 
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
   }
-
 
   @Test
   public void createTopic_ValidInput_ReturnsTopic() {
