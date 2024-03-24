@@ -6,6 +6,7 @@ import com.example.forum.entity.Topic;
 import com.example.forum.service.ForumService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("api/v1")
 @Tag(
@@ -23,8 +22,7 @@ import java.util.UUID;
     description = "Контроллер для управления темами и сообщениями форума")
 public class ForumController {
 
-  @Autowired
-  private ForumService topicService;
+  @Autowired private ForumService topicService;
 
   @PostMapping("/topic")
   @ApiOperation(

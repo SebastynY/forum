@@ -6,13 +6,12 @@ import com.example.forum.entity.Topic;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
 import jakarta.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 /**
  * Класс сервиса для управления темами и сообщениями форума. Предоставляет функциональность для
@@ -21,17 +20,15 @@ import java.util.UUID;
 @Service
 public class ForumService {
 
-  @Autowired
-  private TopicRepository topicRepository;
+  @Autowired private TopicRepository topicRepository;
 
-  @Autowired
-  private MessageRepository messageRepository;
+  @Autowired private MessageRepository messageRepository;
 
   /**
    * Создает новую тему на основе предоставленного DTO темы, включая начальное сообщение.
    *
    * @param topicDto DTO, содержащее информацию, необходимую для создания новой темы и ее начального
-   *                 сообщения.
+   *     сообщения.
    * @return Новосозданная сущность темы.
    */
   @Transactional
@@ -126,7 +123,7 @@ public class ForumService {
   /**
    * Обновляет сообщение в теме.
    *
-   * @param topicId        Идентификатор темы, в которой находится сообщение.
+   * @param topicId Идентификатор темы, в которой находится сообщение.
    * @param messageDetails Детали сообщения для обновления.
    * @return Тема, в которой было обновлено сообщение.
    */
@@ -166,10 +163,10 @@ public class ForumService {
   /**
    * Пагинированный запрос сообщений по идентификатору темы.
    *
-   * @param topicId  Идентификатор темы, для которой требуются сообщения, в формате UUID.
+   * @param topicId Идентификатор темы, для которой требуются сообщения, в формате UUID.
    * @param pageable Параметры для пагинации и сортировки результатов.
    * @return Страница с сообщениями темы, включающая в себя данные о сообщениях и информацию о
-   * пагинации.
+   *     пагинации.
    */
   public Page<Message> getTopicMessages(UUID topicId, Pageable pageable) {
     return messageRepository.findByTopicId(topicId, pageable);
