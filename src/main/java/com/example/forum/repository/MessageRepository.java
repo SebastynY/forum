@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
   Page<Message> findByTopicId(UUID topicId, Pageable pageable);
+
+  long countByTopicId(UUID topicId);
 }
