@@ -159,10 +159,7 @@ public class ForumService {
             .orElseThrow(() -> new IllegalArgumentException("Message not found"));
     UUID topicId = message.getTopic().getId();
     messageRepository.delete(message);
-
-    // Проверяем, остались ли сообщения в теме после удаления
     if (messageRepository.countByTopicId(topicId) == 0) {
-      // Если сообщений не осталось, удаляем тему
       topicRepository.deleteById(topicId);
     }
   }

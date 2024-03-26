@@ -13,28 +13,62 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Конфигурация безопасности веб-приложения на основе Spring Security. Определяет глобальные
+ * настройки безопасности, такие как стратегии аутентификации, шифрование паролей и управление
+ * сессиями.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
   private final JwtTokenProvider jwtTokenProvider;
   private final UserDetailsService userDetailsService;
 
+  /**
+   * Конструктор для {@code SecurityConfig}, инициализирующий провайдер токенов JWT и сервис деталей
+   * пользователей.
+   *
+   * @param jwtTokenProvider Провайдер токенов JWT, используемый для аутентификации запросов.
+   * @param userDetailsService Сервис для загрузки информации о пользователе по его имени.
+   */
   public SecurityConfig(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
     this.jwtTokenProvider = jwtTokenProvider;
     this.userDetailsService = userDetailsService;
   }
 
+  /**
+   * Bean для кодирования паролей с использованием BCrypt.
+   *
+   * @return Экземпляр {@link PasswordEncoder} для шифрования паролей.
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * Bean для {@link AuthenticationManager}, используемый Spring Security для аутентификации
+   * пользователей.
+   *
+   * @param authenticationConfiguration Конфигурация аутентификации, предоставляемая Spring
+   *     Security.
+   * @return Экземпляр {@link AuthenticationManager}.
+   * @throws Exception в случае ошибок конфигурации.
+   */
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
 
+  /**
+   * Конфигурирует цепочку фильтров безопасности для определения правил доступа к ресурсам,
+   * управления сессиями и добавления фильтров аутентификации JWT.
+   *
+   * @param http {@link HttpSecurity} для настройки защиты веб-запросов.
+   * @return Сконфигурированный экземпляр {@link SecurityFilterChain}.
+   * @throws Exception в случае ошибок конфигурации безопасности.
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())

@@ -186,8 +186,12 @@ public class ForumeServiceTest {
   @Test
   public void deleteMessage_ValidId_DeletesMessage() {
     UUID messageId = UUID.randomUUID();
+    Topic topic = new Topic(); // Assuming Topic has a no-args constructor for simplicity
+    topic.setId(UUID.randomUUID()); // Ensure the Topic has an ID
+
     Message existingMessage = new Message();
     existingMessage.setId(messageId);
+    existingMessage.setTopic(topic); // Associate the Topic with the Message
 
     when(messageRepository.findById(messageId)).thenReturn(Optional.of(existingMessage));
 
