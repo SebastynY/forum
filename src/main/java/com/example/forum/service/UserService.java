@@ -2,17 +2,14 @@ package com.example.forum.service;
 
 import com.example.forum.entity.User;
 import com.example.forum.repository.UserRepository;
-
-import java.util.Optional;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Сервис для работы с пользователями форума. Реализует интерфейс UserDetailsService,
- * необходимый для интеграции с механизмом аутентификации Spring Security.
+ * Сервис для работы с пользователями форума. Реализует интерфейс UserDetailsService, необходимый
+ * для интеграции с механизмом аутентификации Spring Security.
  */
 @Service
 public class UserService implements UserDetailsService {
@@ -27,13 +24,12 @@ public class UserService implements UserDetailsService {
     this.userRepository = userRepository;
   }
 
-
   /**
    * Регистрирует нового пользователя в системе.
    *
    * @param username Имя пользователя.
    * @param password Пароль пользователя.
-   * @return Объект {@link User}, представляющий зарегистрированного пользователя.
+   * @return Объект User, представляющий зарегистрированного пользователя.
    */
   public User registerUser(String username, String password) {
     User user = new User();
@@ -41,13 +37,12 @@ public class UserService implements UserDetailsService {
     user.setPassword(password);
     return userRepository.save(user);
   }
-  
 
   /**
    * Загружает данные пользователя по его имени пользователя для аутентификации.
    *
    * @param username Имя пользователя.
-   * @return Объект {@link UserDetails}, содержащий информацию о пользователе.
+   * @return Объект UserDetails, содержащий информацию о пользователе.
    * @throws UsernameNotFoundException если пользователь с таким именем пользователя не найден.
    */
   @Override
