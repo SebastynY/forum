@@ -1,5 +1,6 @@
 package com.example.forum.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -24,6 +25,19 @@ public class Topic {
   @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
   private List<Message> messages = new ArrayList<>();
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  @JsonBackReference
+  private User user;
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
 
   public UUID getId() {
     return id;

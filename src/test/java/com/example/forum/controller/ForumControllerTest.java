@@ -7,9 +7,13 @@ import static org.mockito.Mockito.when;
 import com.example.forum.dto.TopicDTO;
 import com.example.forum.entity.Message;
 import com.example.forum.entity.Topic;
+import com.example.forum.entity.User;
 import com.example.forum.service.ForumService;
+import com.example.forum.service.UserService;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,10 +25,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 class ForumControllerTest {
 
   @Mock private ForumService topicService;
+
+  @Mock private UserService userService;
+
+  @Mock private Principal principal;
 
   @InjectMocks private ForumController forumController;
 
@@ -36,8 +47,14 @@ class ForumControllerTest {
   @Test
   void createTopic_shouldReturnCreatedTopic() {
     TopicDTO topicDto = new TopicDTO();
+    User user = new User();
+    user.setId(1L);
     Topic createdTopic = new Topic();
-    when(topicService.createTopic(topicDto)).thenReturn(createdTopic);
+    when(userService.findByUsername("testuser")).thenReturn(Optional.of(user));
+    when(topicService.createTopic(topicDto, user.getId())).thenReturn(createdTopic);
+
+    Authentication authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
     ResponseEntity<Topic> response = forumController.createTopic(topicDto);
 
@@ -61,10 +78,15 @@ class ForumControllerTest {
   @Test
   void updateTopic_shouldReturnUpdatedTopic() {
     TopicDTO topicDto = new TopicDTO();
+    User user = new User();
+    user.setId(1L);
     Topic updatedTopic = new Topic();
-    when(topicService.updateTopic(topicDto)).thenReturn(updatedTopic);
+    when(userService.findByUsername("testuser")).thenReturn(Optional.of(user));
+    when(topicService.updateTopic(topicDto, user.getId())).thenReturn(updatedTopic);
 
-    ResponseEntity<Topic> response = forumController.updateTopic(topicDto);
+    when(principal.getName()).thenReturn("testuser");
+
+    ResponseEntity<Topic> response = forumController.updateTopic(topicDto, principal);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(updatedTopic, response.getBody());
@@ -86,24 +108,36 @@ class ForumControllerTest {
   void addMessageToTopic_shouldReturnUpdatedTopic() {
     UUID topicId = UUID.randomUUID();
     Message message = new Message();
+    User user = new User();
+    user.setId(1L);
     Topic updatedTopic = new Topic();
+    when(userService.findByUsername("testuser")).thenReturn(Optional.of(user));
     when(topicService.getTopicById(topicId)).thenReturn(updatedTopic);
 
-    ResponseEntity<Topic> response = forumController.addMessageToTopic(topicId, message);
+    when(principal.getName()).thenReturn("testuser");
+
+    ResponseEntity<Topic> response = forumController.addMessageToTopic(topicId, message, principal);
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
     assertEquals(updatedTopic, response.getBody());
-    verify(topicService).addMessageToTopic(topicId, message);
+    verify(topicService).addMessageToTopic(topicId, message, user.getId());
   }
 
   @Test
   void updateMessageInTopic_shouldReturnUpdatedTopic() {
     UUID topicId = UUID.randomUUID();
     Message messageDetails = new Message();
+    User user = new User();
+    user.setId(1L);
     Topic updatedTopic = new Topic();
-    when(topicService.updateMessageInTopic(topicId, messageDetails)).thenReturn(updatedTopic);
+    when(userService.findByUsername("testuser")).thenReturn(Optional.of(user));
+    when(topicService.updateMessageInTopic(topicId, messageDetails, user.getId()))
+        .thenReturn(updatedTopic);
 
-    ResponseEntity<Topic> response = forumController.updateMessageInTopic(topicId, messageDetails);
+    when(principal.getName()).thenReturn("testuser");
+
+    ResponseEntity<Topic> response =
+        forumController.updateMessageInTopic(topicId, messageDetails, principal);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(updatedTopic, response.getBody());
@@ -112,11 +146,16 @@ class ForumControllerTest {
   @Test
   void deleteMessage_shouldReturnNoContent() {
     UUID messageId = UUID.randomUUID();
+    User user = new User();
+    user.setId(1L);
+    when(userService.findByUsername("testuser")).thenReturn(Optional.of(user));
 
-    ResponseEntity<?> response = forumController.deleteMessage(messageId);
+    when(principal.getName()).thenReturn("testuser");
+
+    ResponseEntity<?> response = forumController.deleteMessage(messageId, principal);
 
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    verify(topicService).deleteMessage(messageId);
+    verify(topicService).deleteMessage(messageId, user.getId());
   }
 
   @Test
@@ -125,7 +164,7 @@ class ForumControllerTest {
     List<Message> messagesList = new ArrayList<>();
     Page<Message> messages = new PageImpl<>(messagesList);
     Pageable pageable = Pageable.unpaged();
-    when(topicService.getTopicMessages(topicId, pageable)).thenReturn(messages);
+    when(topicService.getTopicMessage(topicId, pageable)).thenReturn(messages);
 
     ResponseEntity<Page<Message>> response =
         forumController.getMessagesByTopicId(topicId, pageable);

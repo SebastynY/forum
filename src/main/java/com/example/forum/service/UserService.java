@@ -2,6 +2,7 @@ package com.example.forum.service;
 
 import com.example.forum.entity.User;
 import com.example.forum.repository.UserRepository;
+import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,16 @@ public class UserService implements UserDetailsService {
    */
   public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
+  }
+
+  /**
+   * Поиск пользователя по имени пользователя.
+   *
+   * @param username Имя пользователя для поиска.
+   * @return Optional содержащий найденного пользователя или пустой, если пользователь не найден.
+   */
+  public Optional<User> findByUsername(String username) {
+    return userRepository.findByUsername(username);
   }
 
   /**

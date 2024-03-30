@@ -3,8 +3,11 @@ package com.example.forum.service;
 import com.example.forum.dto.TopicDTO;
 import com.example.forum.entity.Message;
 import com.example.forum.entity.Topic;
+import com.example.forum.entity.User;
+import com.example.forum.exception.NotAuthorizedException;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
+import com.example.forum.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ForumService {
 
+  @Autowired private UserRepository userRepository;
+
   @Autowired private TopicRepository topicRepository;
 
   @Autowired private MessageRepository messageRepository;
@@ -32,18 +37,23 @@ public class ForumService {
    * @return Новосозданная сущность темы.
    */
   @Transactional
-  public Topic createTopic(TopicDTO topicDto) {
+  public Topic createTopic(TopicDTO topicDto, Long userId) {
     if (topicDto == null || topicDto.getMessage() == null) {
-      throw new IllegalArgumentException("Topic and initial message must be provided");
+      throw new NotAuthorizedException("Topic and initial message must be provided");
     }
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new NotAuthorizedException("User not found"));
 
     Topic topic = new Topic();
     topic.setTitle(topicDto.getTopicName());
     topic.setCreated(OffsetDateTime.now());
+    topic.setUser(user);
 
     Message message = new Message();
     message.setText(topicDto.getMessage().getText());
-    message.setAuthor(topicDto.getMessage().getAuthor());
+    message.setAuthor(user.getUsername());
     message.setCreated(
         topicDto.getMessage().getCreated() != null
             ? topicDto.getMessage().getCreated()
@@ -73,12 +83,21 @@ public class ForumService {
    * @return Обновленная сущность темы.
    */
   @Transactional
-  public Topic updateTopic(TopicDTO topicDto) {
+  public Topic updateTopic(TopicDTO topicDto, Long userId) {
     UUID topicId = topicDto.getId();
     Topic topic =
         topicRepository
             .findById(topicId)
-            .orElseThrow(() -> new IllegalArgumentException("Topic not found"));
+            .orElseThrow(() -> new NotAuthorizedException("Topic not found"));
+
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new NotAuthorizedException("User not found"));
+
+    if (!topic.getUser().getId().equals(user.getId())) {
+      throw new NotAuthorizedException("Only the author can update the topic");
+    }
 
     if (topicDto.getTopicName() != null) {
       topic.setTitle(topicDto.getTopicName());
@@ -97,7 +116,7 @@ public class ForumService {
   public Topic getTopicById(UUID topicId) {
     return topicRepository
         .findById(topicId)
-        .orElseThrow(() -> new IllegalArgumentException("Topic not found"));
+        .orElseThrow(() -> new NotAuthorizedException("Topic not found"));
   }
 
   /**
@@ -105,14 +124,22 @@ public class ForumService {
    *
    * @param topicId Идентификатор темы, в которую добавляется сообщение.
    * @param message Сообщение для добавления.
+   * @param userId Идентификатор пользователя.
    * @return Добавленное сообщение.
    */
   @Transactional
-  public Message addMessageToTopic(UUID topicId, Message message) {
+  public Message addMessageToTopic(UUID topicId, Message message, Long userId) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new NotAuthorizedException("User not found"));
+
     Topic topic =
         topicRepository
             .findById(topicId)
-            .orElseThrow(() -> new IllegalArgumentException("Topic not found"));
+            .orElseThrow(() -> new NotAuthorizedException("Topic not found"));
+
+    message.setAuthor(user.getUsername());
     message.setTopic(topic);
     message.setCreated(OffsetDateTime.now());
     topic.getMessages().add(message);
@@ -128,19 +155,30 @@ public class ForumService {
    * @return Тема, в которой было обновлено сообщение.
    */
   @Transactional
-  public Topic updateMessageInTopic(UUID topicId, Message messageDetails) {
+  public Topic updateMessageInTopic(UUID topicId, Message messageDetails, Long userId) {
     Topic topic =
         topicRepository
             .findById(topicId)
-            .orElseThrow(() -> new IllegalArgumentException("Topic not found"));
+            .orElseThrow(() -> new NotAuthorizedException("Topic not found"));
     UUID messageId = messageDetails.getId();
     Message messageToUpdate =
         messageRepository
             .findById(messageId)
-            .orElseThrow(() -> new IllegalArgumentException("Message not found"));
+            .orElseThrow(() -> new NotAuthorizedException("Message not found"));
+
     if (!messageToUpdate.getTopic().getId().equals(topicId)) {
-      throw new IllegalArgumentException("Message does not belong to the topic");
+      throw new NotAuthorizedException("Message does not belong to the topic");
     }
+
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new NotAuthorizedException("User not found"));
+
+    if (!messageToUpdate.getAuthor().equals(user.getUsername())) {
+      throw new NotAuthorizedException("Only the author can update the message");
+    }
+
     messageToUpdate.setText(messageDetails.getText());
     messageRepository.save(messageToUpdate);
     return topic;
@@ -152,11 +190,21 @@ public class ForumService {
    * @param messageId Идентификатор удаляемого сообщения.
    */
   @Transactional
-  public void deleteMessage(UUID messageId) {
+  public void deleteMessage(UUID messageId, Long userId) {
     Message message =
         messageRepository
             .findById(messageId)
-            .orElseThrow(() -> new IllegalArgumentException("Message not found"));
+            .orElseThrow(() -> new NotAuthorizedException("Message not found"));
+
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new NotAuthorizedException("User not found"));
+
+    if (!message.getAuthor().equals(user.getUsername())) {
+      throw new NotAuthorizedException("Only the author can delete the message");
+    }
+
     UUID topicId = message.getTopic().getId();
     messageRepository.delete(message);
     if (messageRepository.countByTopicId(topicId) == 0) {
@@ -172,7 +220,7 @@ public class ForumService {
    * @return Страница с сообщениями темы, включающая в себя данные о сообщениях и информацию о
    *     пагинации.
    */
-  public Page<Message> getTopicMessages(UUID topicId, Pageable pageable) {
+  public Page<Message> getTopicMessage(UUID topicId, Pageable pageable) {
     return messageRepository.findByTopicId(topicId, pageable);
   }
 }

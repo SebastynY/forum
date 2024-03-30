@@ -1,6 +1,9 @@
 package com.example.forum.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -14,6 +17,26 @@ public class User {
 
   @Column(nullable = false)
   private String password;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  private List<Topic> topics = new ArrayList<>();
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public List<Topic> getTopics() {
+    return topics;
+  }
+
+  public void setTopics(List<Topic> topics) {
+    this.topics = topics;
+  }
 
   public String getUsername() {
     return username;
