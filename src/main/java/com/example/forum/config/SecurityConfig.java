@@ -25,7 +25,7 @@ public class SecurityConfig {
   private final UserDetailsService userDetailsService;
 
   /**
-   * Конструктор для {@code SecurityConfig}, инициализирующий провайдер токенов JWT и сервис деталей
+   * Конструктор для SecurityConfig, инициализирующий провайдер токенов JWT и сервис деталей
    * пользователей.
    *
    * @param jwtTokenProvider Провайдер токенов JWT, используемый для аутентификации запросов.
@@ -39,7 +39,7 @@ public class SecurityConfig {
   /**
    * Bean для кодирования паролей с использованием BCrypt.
    *
-   * @return Экземпляр {@link PasswordEncoder} для шифрования паролей.
+   * @return Экземпляр PasswordEncoder для шифрования паролей.
    */
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -47,12 +47,11 @@ public class SecurityConfig {
   }
 
   /**
-   * Bean для {@link AuthenticationManager}, используемый Spring Security для аутентификации
-   * пользователей.
+   * Bean для AuthenticationManager, используемый Spring Security для аутентификации пользователей.
    *
    * @param authenticationConfiguration Конфигурация аутентификации, предоставляемая Spring
    *     Security.
-   * @return Экземпляр {@link AuthenticationManager}.
+   * @return Экземпляр AuthenticationManager.
    * @throws Exception в случае ошибок конфигурации.
    */
   @Bean
@@ -65,8 +64,8 @@ public class SecurityConfig {
    * Конфигурирует цепочку фильтров безопасности для определения правил доступа к ресурсам,
    * управления сессиями и добавления фильтров аутентификации JWT.
    *
-   * @param http {@link HttpSecurity} для настройки защиты веб-запросов.
-   * @return Сконфигурированный экземпляр {@link SecurityFilterChain}.
+   * @param http HttpSecurity для настройки защиты веб-запросов.
+   * @return Сконфигурированный экземпляр SecurityFilterChain.
    * @throws Exception в случае ошибок конфигурации безопасности.
    */
   @Bean
