@@ -95,7 +95,7 @@ public class ForumService {
             .findById(userId)
             .orElseThrow(() -> new NotAuthorizedException("User not found"));
 
-    if (!topic.getUser().getId().equals(user.getId())) {
+    if (!topic.getUser().getId().equals(user.getId()) && !user.getUsername().equals("admin")) {
       throw new NotAuthorizedException("Only the author can update the topic");
     }
 
@@ -175,7 +175,8 @@ public class ForumService {
             .findById(userId)
             .orElseThrow(() -> new NotAuthorizedException("User not found"));
 
-    if (!messageToUpdate.getAuthor().equals(user.getUsername())) {
+    if (!messageToUpdate.getAuthor().equals(user.getUsername())
+        && !user.getUsername().equals("admin")) {
       throw new NotAuthorizedException("Only the author can update the message");
     }
 
@@ -201,7 +202,7 @@ public class ForumService {
             .findById(userId)
             .orElseThrow(() -> new NotAuthorizedException("User not found"));
 
-    if (!message.getAuthor().equals(user.getUsername())) {
+    if (!message.getAuthor().equals(user.getUsername()) && !user.getUsername().equals("admin")) {
       throw new NotAuthorizedException("Only the author can delete the message");
     }
 
